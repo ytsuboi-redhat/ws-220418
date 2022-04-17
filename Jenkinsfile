@@ -24,26 +24,12 @@ pipeline {
         stage('backendビルド') {
             steps {
                 script {
-//                    // Wait until mysql service is up
-//                    sh './todo-backend/wait-for-it.sh -t 30 todo-mysql:3306'
-//                    // Run Backend UT
-//                    //sh 'mvn clean jacoco:prepare-agent test jacoco:report -f todo-backend'
                       sh 'mvn clean package -f backend'
                 }
             }
         }
         stage('静的解析') {
             steps {
-//                withSonarQubeEnv('default') {
-//                    sh """
-//                      ${tool 'sonarqube-scanner'}/bin/sonar-scanner \
-//                        -Dsonar.projectKey=workshop:frontend \
-//                        -Dsonar.projectName=team2-frontend \
-//                        -Dsonar.projectVersion=1 \
-//                        -Dsonar.javascript.lcov.reportPaths=frontend/tests/unit/coverage/lcov.info \
-//                        -Dsonar.sources=frontend/src 
-//                    """
-//                }
                 sh """
                   mvn sonar:sonar \
                     -f backend \
@@ -57,8 +43,8 @@ pipeline {
             steps {
                 dir('frontend') {
                     nodejs(nodeJSInstallationName: 'NodeJS LTS') {
-                        sh 'docker build -t frontend:latest'
-                        sh 'docker run --rm frontend'
+                        sh 'rm -r /usr/share/nginx/html/*'
+                        sh 'cp -r dist/* /usr/share/nginx/html'
                     }   
                 }
             }
@@ -66,8 +52,8 @@ pipeline {
         stage('backendデプロイ') {
             steps {
                 dir('backend') {
-                    sh 'docker build -t backend:latest'
-                    sh 'docker run --rm backend'
+                    sh 'mvn spring-boot:stop'
+                    sh 'mvn spring-boot:start -Dspring-boot.run.profiles=jenkins'
                 }
             }
         }
