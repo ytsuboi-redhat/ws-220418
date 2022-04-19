@@ -3,18 +3,18 @@ package com.redhat.jp.labs.sample.at;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.WebDriverRunner;
 import com.codeborne.selenide.junit.TextReport;
-
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions;
 import io.cucumber.junit.CucumberOptions.SnippetType;
 
-import java.sql.DriverManager;
-
+import javax.sql.DataSource;
 import org.dbunit.DefaultDatabaseTester;
 import org.dbunit.IDatabaseTester;
 import org.dbunit.IOperationListener;
 import org.dbunit.database.DatabaseConfig;
-import org.dbunit.database.DatabaseConnection;
+import org.dbunit.database.DatabaseDataSourceConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.ext.mysql.MySqlDataTypeFactory;
 import org.dbunit.ext.mysql.MySqlMetadataHandler;
@@ -29,8 +29,12 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
     snippets = SnippetType.UNDERSCORE, tags = "not @Ignore")
 public class AcceptanceTest {
 
-  private static final String DB_URL =
-      System.getProperty("at.db.url", "jdbc:mysql://localhost:3306/backlog");
+  private static final String DB_URL_TEMPLATE = "jdbc:mysql://%s/%s";
+
+  private static final String DB_HOST =
+      System.getProperty("at.db.host", "localhost:3306");
+  private static final String DB_SCHEMA =
+      System.getProperty("at.db.schema", "backlog");
   private static final String DB_USER = System.getProperty("at.db.user", "backlog");
   private static final String DB_PASS = System.getProperty("at.db.pass", "password");
 
@@ -61,8 +65,7 @@ public class AcceptanceTest {
   }
 
   private static void configureDatabaseTester() throws Exception {
-    IDatabaseConnection databaseConnection =
-        new DatabaseConnection(DriverManager.getConnection(DB_URL, DB_USER, DB_PASS));
+    IDatabaseConnection databaseConnection = new DatabaseDataSourceConnection(configureDataSource(), DB_SCHEMA);
     DatabaseConfig databaseConfig = databaseConnection.getConfig();
     databaseConfig.setProperty(DatabaseConfig.FEATURE_ALLOW_EMPTY_FIELDS, true);
     databaseConfig.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY,
@@ -71,6 +74,15 @@ public class AcceptanceTest {
         new MySqlMetadataHandler());
     databaseTester = new DefaultDatabaseTester(databaseConnection);
     databaseTester.setOperationListener(IOperationListener.NO_OP_OPERATION_LISTENER);
+  }
+
+  private static DataSource configureDataSource() {
+    HikariConfig config = new HikariConfig();
+    config.setJdbcUrl(String.format(DB_URL_TEMPLATE, DB_HOST, DB_SCHEMA));
+    config.addDataSourceProperty("user", DB_USER);
+    config.addDataSourceProperty("password", DB_PASS);
+    config.setConnectionInitSql("SELECT 1");
+    return new HikariDataSource(config);
   }
 
 }

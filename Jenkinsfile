@@ -80,7 +80,7 @@ pipeline {
         stage('受け入れテスト') {
             steps {
                 dir('at') {
-                    sh '_JAVA_OPTIONS=-Dfile.encoding=UTF-8 xvfb-run mvn clean test -Dselenide.baseUrl=http://frontend -Dselenide.browser=chrome -Dat.db.url=jdbc:mysql://mariadb:3306/backlog'
+                    sh '_JAVA_OPTIONS=-Dfile.encoding=UTF-8 xvfb-run mvn clean test -Dselenide.baseUrl=http://frontend -Dselenide.browser=chrome -Dat.db.host=mariadb:3306 -Dat.db.schema=backlog'
                 }
             }
         }
