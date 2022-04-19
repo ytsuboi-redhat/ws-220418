@@ -12,5 +12,5 @@ Feature: Product Backlog の俯瞰的な可視化
       | name         | story point |
       | TODO:item_11 | 3           |
       | TODO:item_12 | 8           |
-      | TODO:item_13 | -1           |
+      | TODO:item_13 | ?           |
     And   Product Backlog Item の id が自動的に重複無く採番され表示されていること
