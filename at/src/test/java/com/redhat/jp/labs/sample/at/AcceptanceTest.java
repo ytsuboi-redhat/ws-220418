@@ -32,9 +32,9 @@ public class AcceptanceTest {
   private static final String DB_URL_TEMPLATE = "jdbc:mysql://%s/%s";
 
   private static final String DB_HOST =
-      System.getProperty("at.db.host", "localhost:3306");
+      System.getProperty("at.db.host", "54.250.77.254:3306");
   private static final String DB_SCHEMA =
-      System.getProperty("at.db.schema", "backlog");
+      System.getProperty("at.db.schema", "backlog_local_1");
   private static final String DB_USER = System.getProperty("at.db.user", "backlog");
   private static final String DB_PASS = System.getProperty("at.db.pass", "password");
 
