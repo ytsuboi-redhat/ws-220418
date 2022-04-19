@@ -2,7 +2,7 @@ FROM openjdk:11
 
 VOLUME /tmp
 
-COPY target/todo-backend.jar app.jar
+COPY target/backend.jar app.jar
 
 EXPOSE 8080
 

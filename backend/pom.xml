@@ -16,6 +16,7 @@
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
+		<java.version>11</java.version>
 		<!-- ===== plugin versions ===== -->
 		<version.maven.sonar.plugin>3.4.0.905</version.maven.sonar.plugin>
 		<!-- ===== library versions ===== -->
@@ -82,6 +83,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.junit.vintage</groupId>
+			<artifactId>junit-vintage-engine</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.dbunit</groupId>
 			<artifactId>dbunit</artifactId>
 			<version>${version.org.dbunit}</version>
@@ -106,9 +112,7 @@
 						<includes>
 							<include>**/*Test.java</include>
 						</includes>
-						<argLine>@{argLine} -Dfile.encoding=UTF-8</argLine>
-						<!-- Workaround for the Maven Surefire Plugin issue: The forked VM terminated without properly saying goodbye. VM crash or System.exit called? -->
-						<useSystemClassLoader>false</useSystemClassLoader>
+						<argLine>@{argLine} -Dfile.encoding=UTF-8 -Xmx2048m</argLine>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -128,7 +132,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<jvmArguments>-Dfile.encoding=UTF-8 -DdebugMessage=hoge</jvmArguments>
+					<jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -178,9 +182,7 @@
 							<includes>
 								<include>**/*IT.java</include>
 							</includes>
-							<argLine>-Dfile.encoding=UTF-8</argLine>
-							<!-- Workaround for the Maven Surefire Plugin issue: The forked VM terminated without properly saying goodbye. VM crash or System.exit called? -->
-							<useSystemClassLoader>false</useSystemClassLoader>
+							<argLine>-Dfile.encoding=UTF-8 -Xmx2048m</argLine>
 						</configuration>
 						<executions>
 							<execution>
