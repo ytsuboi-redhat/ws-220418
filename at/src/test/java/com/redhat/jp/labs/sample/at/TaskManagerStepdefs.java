@@ -18,28 +18,49 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
 public class TaskManagerStepdefs {
-    @Then("{int} 個の Product Backlog Item が一覧で表示される")
-    public void n個のProductBacklogItemが一覧で表示される(int count) {
-        $$("#product-backlog tbody tr").shouldHaveSize(count);
+    @When("Product Backlog Itemの詳細画面を開く")
+    public void ProductBacklogItemの詳細画面を開く() {
+        $("#item-1").click();
     }
 
-    @Then("以下の name の順序通りに Product Backlog Item が表示される")
-    public void 以下のnameの順序通りにProductBacklogItemが表示される(DataTable dataTable) {
-        List<Map<String, String>> dataTableMaps = dataTable.asMaps();
-        ElementsCollection trCollection = $$("#product-backlog tbody tr");
-        trCollection.shouldHaveSize(dataTableMaps.size());
-        for (int i = 0; i < dataTableMaps.size(); i++) {
-            trCollection.get(i).$("td.name")
-                    .should(Condition.text(dataTableMaps.get(i).get("name")));
+    @When("タスクの登録ボタンをクリックする")
+    public void タスクの登録ボタンをクリックする() {
+        $("#registration-task").click();
+    }
+
+    @When("以下の情報を登録する")
+    public void 以下の情報を登録する(DataTable dataTable) {
+        List<Map<String, String>> dataTableRows = dataTable.asMaps();
+        for (int i = 0; i < dataTableRows.size(); i++) {
+            Map<String, String> dataTableMap = dataTableRows.get(i);
+            $("#name").setValue(dataTableMap.get("name"));
+            $("#description").setValue(dataTableMap.get("description"));
+            $("#estimate-time").setValue(dataTableMap.get("estimate time"));
+            $("#status").setValue(dataTableMap.get("status"));
+            $("#memo").setValue(dataTableMap.get("memo"));
         }
     }
 
-    @And("Product Backlog Item の id が自動的に重複無く採番され表示されていること")
-    public void productBacklogItemのIdが自動的に重複無く採番され表示されていること() {
-        Set<String> itemId = new HashSet<>();
-        for (SelenideElement itemIdElement : $$("#product-backlog tbody tr td.itemId")) {
-            itemIdElement.shouldNot(Condition.empty);
-            Assert.assertTrue(itemId.add(itemIdElement.text()));
+    @When("登録ボタンをクリックする")
+    public void 登録ボタンをクリックする() {
+        $("#registration-task").click();
+    }
+
+    @Then("以下の内容でタスクが登録されていること")
+    public void 以下の内容でタスクが登録されていること(DataTable dataTable) {
+        List<Map<String, String>> dataTableRows = dataTable.asMaps();
+        ElementsCollection trCollection = $$("#tbl-task tbody tr");
+        trCollection.shouldHaveSize(dataTableRows.size());
+        for (int i = 0; i < dataTableRows.size(); i++) {
+            SelenideElement tr = trCollection.get(i);
+            Map<String, String> dataTableMap = dataTableRows.get(i);
+
+            tr.$("#name").should(Condition.text(dataTableMap.get("name")));
+            tr.$("#description").should(Condition.text(dataTableMap.get("description")));
+            tr.$("#estimate-time").should(Condition.text(dataTableMap.get("estimate time")));
+            tr.$("#status").should(Condition.text(dataTableMap.get("status")));
+            tr.$("#memo").should(Condition.text(dataTableMap.get("memo")));
         }
     }
+
 }
